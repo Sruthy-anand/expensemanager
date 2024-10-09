@@ -1,5 +1,7 @@
 from django import forms
 from budget.models import Expense
+from django.contrib.auth.models import User
+
 
 class ExpenseForm(forms.ModelForm):
 
@@ -7,7 +9,7 @@ class ExpenseForm(forms.ModelForm):
 
         model=Expense
 
-        exclude=("created_date",)
+        exclude=("created_date","user")
 
         # fields="__all__"
 
@@ -16,6 +18,22 @@ class ExpenseForm(forms.ModelForm):
             "title":forms.TextInput(attrs={"class":"form-control"}),
             "amount":forms.NumberInput(attrs={"class":"form-control"}),
             "category":forms.Select(attrs={"class":"form-control form-select"}),
-            "user":forms.TextInput(attrs={"class":"form-control"})
 
         }
+
+
+class RegistrationForm(forms.ModelForm):
+
+    class Meta:
+
+        model=User
+        fields=["username","email","password"]
+
+        widgets={
+            "password":forms.PasswordInput()
+        }
+
+class SignInForm(forms.Form):
+
+    username=forms.CharField(widget=forms.TextInput(attrs={"class":"form-control mb-3 mt-4"}))
+    password=forms.CharField(widget=forms.PasswordInput(attrs={"class":"form-control mb-3 mt-4"}))

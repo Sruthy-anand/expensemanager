@@ -21,4 +21,8 @@ from budget import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('expense/add/',views.ExpenseCreateView.as_view(),name='exp-add'),
+    path('expense/all/',views.ExpenseListView.as_view(),name="exp-list"),
+    path('expense/<int:pk>/change/',views.ExpenseUpdateView.as_view(),name='exp-update'),
+    path('expense/<int:pk>/delete/',views.ExpenseDeleteView.as_view(),name='exp-delete'),
+    path("",views.ExpenseSummaryView.as_view(),name='exp-summary'),
 ]
