@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# Create your models here.
 
 class Expense(models.Model):
 
@@ -10,7 +9,7 @@ class Expense(models.Model):
 
     amount=models.IntegerField()
 
-    created_date=models.DateTimeField(auto_now=True)
+    created_date=models.DateTimeField(auto_now_add=True)
 
     category_choices=(
         ("food","food"),

@@ -9,6 +9,9 @@
 
         <form action="">
             <select name="category" id="" class="form-select" onchange="this.form.submit()">
+                <option value="all"{% if selected == "all"%} selected {%endif%}>All</option>
+
+
                 <option value="food"{% if selected == "food"%} selected {%endif%}>Food</option>
                 <option value="travel"{% if selected == "travel"%} selected {%endif%}>Travel</option>
                 <option value="health"{% if selected == "health"%} selected {%endif%}>Health</option>
@@ -24,3 +27,26 @@
         </form>
     </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        {%for e in expense%}
+        <div class="card-body">
+            
+            <h5 class="card-title">{{e.title}}</h5>
+            <p class="card-text">{{e.amount}}</p>
+    </div>
+    <div class="card-footer text-body-white">
+      <div>created_date:{{e.created_date|date}}</div>
+      <div>due_date:{{e.due_date|date}}</div>
+      <div>last_date:{{e.updated_date|date}}</div>
+
+      <a href="{%url 'exp-update' e.id%}" class="btn btn-primary">View</a>
+      <a href="{%url 'exp-delete' e.id%}" class="btn btn-danger">Delete</a>
+  </div>
+
+  {%endfor%}
+  </div>
+  </div>
+
+{%endblock%}

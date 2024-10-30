@@ -30,7 +30,9 @@ class RegistrationForm(forms.ModelForm):
         fields=["username","email","password"]
 
         widgets={
-            "password":forms.PasswordInput()
+            "username":forms.TextInput(attrs={"class":"form-control"}),
+            "email":forms.TextInput(attrs={"class":"form-control"}),
+            "password":forms.PasswordInput(attrs={"class":"form-control"})
         }
 
 class SignInForm(forms.Form):

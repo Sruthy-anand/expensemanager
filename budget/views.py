@@ -17,8 +17,14 @@ from django import forms
 
 from django.contrib.auth import authenticate,login,logout
 
+from budget.decorators import signin_required
 
+from django.utils.decorators import method_decorator
 
+from django.views.decorators.cache import never_cache
+
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")
 
 class ExpenseCreateView(View):
 
@@ -40,7 +46,7 @@ class ExpenseCreateView(View):
 
             messages.success(request,"Package is added successfully")
 
-            return redirect("exp-add")
+            return redirect("exp-list")
         
         else:
 
@@ -48,9 +54,15 @@ class ExpenseCreateView(View):
 
             return render(request,"exp_create.html",{"form":form_instance})
 
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")
+
 class ExpenseListView(View):
 
     def get(self,request,*args,**kwargs):
+
+        # if not request.user.is_authenticated:
+        #     return redirect('signin')
 
         search_text=request.GET.get("search_text")
 
@@ -58,17 +70,23 @@ class ExpenseListView(View):
 
         if selected_category == "all":
             
-            qs=Expense.objects.all()
+            qs=Expense.objects.filter(user=request.user)
 
         else:
-            qs=Expense.objects.filter(category=selected_category)
+            qs=Expense.objects.filter(category=selected_category,user=request.user)
 
         if search_text!=None:
 
-            qs=Expense.objects.filter(Q(title__icontains=search_text)|Q(amount__icontains=search_text))
+            qs=Expense.objects.filter(user=request.user)
+
+            qs=qs.filter(Q(title__contains=search_text))
 
         return render(request,"exp_list.html",{"expenses":qs,"selected":selected_category})
-    
+
+
+
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")   
 class ExpenseDetailView(View):
 
     def get(self,request,*args,**kwargs):
@@ -80,6 +98,10 @@ class ExpenseDetailView(View):
         qs=Expense.objects.get(id=id)
 
         return render(request,"exp_detail.html",{"expense":qs})
+
+
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")
     
 class ExpenseUpdateView(View):
 
@@ -113,6 +135,10 @@ class ExpenseUpdateView(View):
             return render(request,"exp_edit.html",{"form":form_instance})
         
 
+
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")
+
 class ExpenseDeleteView(View):
 
     def get(self,request,*args,**kwargs):
@@ -124,6 +150,10 @@ class ExpenseDeleteView(View):
 from django.db.models import Sum
 
 
+
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")
+
 class ExpenseSummaryView(View):
 
     def get(self,request,*args,**kwargs):
@@ -132,7 +162,7 @@ class ExpenseSummaryView(View):
 
         total_exp_count=qs.count()
 
-        category_summary=qs.values("amount").aggregate(Sum("amount"))
+        category_summary=qs.values("amount").aggregate(exp_sum=Sum("amount"))
         context={
             "total_exp_count":total_exp_count,
             "category_summary":category_summary,
@@ -196,9 +226,22 @@ class SignInView(View):
             return render(request,self.template_name,{"form":form_instance})
 
 
+
+decs=[signin_required,never_cache]
+@method_decorator(decs,name="dispatch")
+
 class SignOutView(View):
 
     def get(self,request,*args,**kwargs):
 
         logout(request)
         return redirect("signin")
+    
+
+
+class DashBoradView(View):
+
+    template_name="dash_board.html"
+    def get(self,request,*args,**kwargs):
+
+        return render(request,self.template_name)

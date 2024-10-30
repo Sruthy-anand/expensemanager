@@ -1,0 +1,21 @@
+{%extends 'base.html'%}
+
+{%block main_block%}
+
+<center>
+
+    <h1>Total Expense {{total_exp_count}}</h1>
+
+    <div class="border">
+        <h2>Category Summary</h2>
+
+        {%for cs in category_summary%}
+            <div>
+                <h4>{{cs.category}} : {{}cs.exp_sum}</h4>
+            </div>
+        {%endfor%}
+
+    </div>
+</center>
+
+{%endblock%}
